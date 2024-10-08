@@ -101,7 +101,7 @@ export default {
     text-align: start;
     margin-top: 1em;
     padding: 1em;
-    width: 80%;
+    width: 100%;
 }
 
 .search-bar input{
@@ -119,5 +119,21 @@ export default {
 
 .search-bar button:hover{
     cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .wrapper h1 {
+        font-size: 1.8em;
+        padding-left: 0.7em;
+    }
+
+    .wrapper {
+        padding: 1em;
+        padding-top: 1em;
+    }
+
+    .visualize {
+        font-size: 0.65em;
+    }
 }
 </style>

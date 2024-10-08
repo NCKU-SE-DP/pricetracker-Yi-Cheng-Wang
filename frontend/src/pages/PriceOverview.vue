@@ -75,4 +75,21 @@ export default {
     font-weight: normal;
     margin-top: .5em;
 }
+
+@media (max-width: 768px) {
+    .wrapper h1 {
+        font-size: 1.8em;
+        padding-left: 0.7em;
+    }
+
+    .wrapper h3 {
+        font-size: 1.1em;
+        padding-left: 1.2em;
+    }
+
+    .wrapper {
+        padding: 1em;
+        padding-top: 1em;
+    }
+}
 </style>
