@@ -42,6 +42,9 @@ export default {
 
 <style scoped>
 .login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 3em 5em;
     background: #f3f3f3;
     min-height: calc(100vh - 4.5em);
@@ -54,11 +57,13 @@ export default {
 }
 
 .container {
-    margin-top: 2em;
+    margin-top: 1em;
     background: #fff;
     padding: 2em;
     border-radius: 1em;
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    max-width: 40em;
+    width: 100%;
 }
 
 form{
@@ -110,5 +115,15 @@ form > input{
 
 #login:hover{
     background-color: #46b8da;
+}
+
+@media (max-width: 768px) {
+    .login-page h1{
+        font-size: 1.8em;
+    }
+
+    .container {
+        font-size: 0.8em;
+    }
 }
 </style>

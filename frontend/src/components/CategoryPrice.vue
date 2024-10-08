@@ -95,4 +95,10 @@ h2{
     border-radius: 1em;
     padding: 2em;
 }
+
+@media (max-width: 768px) {
+    .wrapper h2 {
+        font-size: 1.4em;
+    }
+}
 </style>
