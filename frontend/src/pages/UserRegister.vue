@@ -13,6 +13,7 @@
                 <p v-if="errors.passwordConfirm" class="error">{{ errors.passwordConfirm }}</p>
 
                 <div class="ops">
+                    <button type="button" id="login"><RouterLink to="/login">登入</RouterLink></button>
                     <button type="submit" id="register">註冊</button>
                 </div>
             </form>
@@ -67,6 +68,9 @@ export default {
 
 <style scoped>
 .register-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 3em 5em;
     background: #f3f3f3;
     min-height: calc(100vh - 4.5em);
@@ -80,11 +84,13 @@ export default {
 }
 
 .container {
-    margin-top: 2em;
+    margin-top: 1em;
     background: #fff;
     padding: 2em;
     border-radius: 1em;
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    max-width: 40em;
+    width: 100%;
 }
 
 form{
@@ -123,5 +129,25 @@ form > input{
 
 #register:hover{
     background-color: #46b8da;
+}
+
+#login{
+    background-color: #F3F3F3;
+    border: 1px solid #ccc;
+}
+
+#login > a{
+    text-decoration: none;
+    color: #000;
+}
+
+@media (max-width: 768px) {
+    .register-page h1{
+        font-size: 1.8em;
+    }
+
+    .container {
+        font-size: 0.8em;
+    }
 }
 </style>

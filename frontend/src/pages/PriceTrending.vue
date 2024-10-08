@@ -86,33 +86,45 @@ export default {
 }
 
 .content {
-    margin-top: 2em;
+    margin-top: 1em;
     background-color: #fff;
     border-radius: 1em;
-    padding: 2em;
+    padding: 1em 0.3em;
     width: 100%;
 }
 
-
 .selects {
-    display: flex;
-    justify-content: flex-start;
+    display: block;
 }
 
 .selects>select {
     padding: .5em;
     font-size: 1.1em;
-    margin-right: 1em;
     border-radius: .5em;
     border: 1px solid #ccc;
     outline: none;
     cursor: pointer;
     appearance: auto !important;
+    width: 100%;
+    max-width: 20em;
+    margin: 0.4em;
 }
 
 .visualize > * {
     flex: 1 1 50%;
     box-sizing: border-box;
-    padding: 1em;
+    overflow: auto;
+}
+
+@media (max-width: 768px) {
+    .wrapper h1 {
+        font-size: 1.8em;
+        padding-left: 0.7em;
+    }
+
+    .wrapper {
+        padding: 1em;
+        padding-top: 1em;
+    }
 }
 </style>
