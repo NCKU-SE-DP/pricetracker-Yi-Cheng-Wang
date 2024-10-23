@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from main import app
 from main import Base, User, session_opener
 from jose import jwt
-from main import pwd_context
+from main import password_context
 
 SECRET_KEY = "1892dhianiandowqd0n"
 ALGORITHM = "HS256"
