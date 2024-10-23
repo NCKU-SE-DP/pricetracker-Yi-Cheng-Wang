@@ -158,7 +158,7 @@ def add_news_to_database(news_data):
     db_session.close()
 
 
-def fetch_news_data(search_term, is_initial=False):
+def get_new_info(search_term, is_initial=False):
     """
     get news data
 
@@ -203,7 +203,7 @@ def fetch_and_process_news(is_initial=False):
     :return:
     """
     SEARCH_KEYWORD = "價格"
-    news_data = fetch_news_data(SEARCH_KEYWORD, is_initial=is_initial)
+    news_data = get_new_info(SEARCH_KEYWORD, is_initial=is_initial)
     for news_item in news_data:
         news_title = news_item["title"]
         relevance_check_messages = [
@@ -358,14 +358,14 @@ id_counter = itertools.count(start=INITIAL_ID)
 def get_article_upvote_details(article_id, user_id, database):
     upvote_count = (
         database.query(user_news_association_table)
-        .filter_by(news_article_id=article_id)
+        .filter_by(news_articles_id=article_id)
         .count()
     )
     is_upvoted = False
     if user_id:
         is_upvoted = (
                 database.query(user_news_association_table)
-                .filter_by(news_article_id=article_id, user_id=user_id)
+                .filter_by(news_articles_id=article_id, user_id=user_id)
                 .first()
                 is not None
         )
@@ -438,7 +438,7 @@ async def search_news(request: PromptRequest):
     )
     extracted_keywords = completion.choices[0].message.content
     # Should change into simple factory pattern
-    news_items = fetch_news_data(extracted_keywords, is_initial=False)
+    news_items = get_new_info(extracted_keywords, is_initial=False)
     for news_item in news_items:
         try:
             response = requests.get(news_item["titleLink"])
@@ -508,14 +508,14 @@ def upvote_article(
 def toggle_upvote(news_id, user_id, database):
     existing_upvote = database.execute(
         select(user_news_association_table).where(
-            user_news_association_table.c.news_article_id == news_id,
+            user_news_association_table.c.news_articles_id == news_id,
             user_news_association_table.c.user_id == user_id,
         )
     ).scalar()
 
     if existing_upvote:
         delete_stmt = delete(user_news_association_table).where(
-            user_news_association_table.c.news_article_id == news_id,
+            user_news_association_table.c.news_articles_id == news_id,
             user_news_association_table.c.user_id == user_id,
         )
         database.execute(delete_stmt)
@@ -523,7 +523,7 @@ def toggle_upvote(news_id, user_id, database):
         return "Upvote removed"
     else:
         insert_stmt = insert(user_news_association_table).values(
-            news_article_id=news_id, user_id=user_id
+            news_articles_id=news_id, user_id=user_id
         )
         database.execute(insert_stmt)
         database.commit()
