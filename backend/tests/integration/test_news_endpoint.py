@@ -38,7 +38,7 @@ def clear_users():
 
 @pytest.fixture(scope="module")
 def test_user(clear_users):
-    hashed_password = pwd_context.hash("testpassword")
+    hashed_password = password_context.hash("testpassword")
 
     with next(override_session_opener()) as db:
         user = User(username="testuser", hashed_password=hashed_password)
@@ -61,7 +61,7 @@ def test_articles():
             url="https://example.com/test-news-1",
             title="Test News 1",
             content="This is test content 1",
-            time="2024-01-01",
+            publish_time="2024-01-01",
             summary="Test summary 1",
             reason="Test reason 1"
         )
@@ -69,7 +69,7 @@ def test_articles():
             url="https://example.com/test-news-2",
             title="Test News 2",
             content="This is test content 2",
-            time="2024-01-02",
+            publish_time="2024-01-02",
             summary="Test summary 2",
             reason="Test reason 2"
         )
@@ -152,7 +152,7 @@ def test_search_news(mocker):
     data = response.json()
     assert len(data) == 1
     assert data[0]["title"] == "Test Title"
-    assert data[0]["time"] == "2024-09-10"
+    assert data[0]["publish_time"] == "2024-09-10"
     assert data[0]["content"] == "This is a test paragraph."
 
 
