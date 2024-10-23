@@ -7,7 +7,7 @@ from jose import jwt
 from main import app
 from main import Base, NewsArticle, User, session_opener, user_news_upvotes_table
 from main import NewsSummaryRequestSchema, PromptRequest
-from main import pwd_context
+from main import password_context
 from unittest.mock import Mock
 
 
