@@ -11,6 +11,9 @@ from sqlalchemy.orm import Session
 # Local imports
 from src.models import NewsArticle
 from src.database import DatabaseSession
+from src.crawler.udn_crawler import UDNCrawler
+
+udn_crawler = UDNCrawler()
 
 def add_news_to_database(news_data):
     """
@@ -19,16 +22,7 @@ def add_news_to_database(news_data):
     :return:
     """
     db_session = DatabaseSession()
-    db_session.add(NewsArticle(
-        url=news_data["url"],
-        title=news_data["title"],
-        time=news_data["time"],
-        content=" ".join(news_data["content"]),  # Convert content list to string
-        summary=news_data["summary"],
-        reason=news_data["reason"],
-    ))
-    db_session.commit()
-    db_session.close()
+    udn_crawler.save(news_data, db_session)
 
 def fetch_and_process_news(is_initial=False):
     """
@@ -98,34 +92,11 @@ def get_new_info(search_term, is_initial=False):
     :param is_initial:
     :return:
     """
-    all_news_data = []
     # iterate pages to get more news data, not actually get all news data
     if is_initial:
-        news_pages = []
-        MAX_PAGES = 10
-        for page in range(1, MAX_PAGES):
-            params = {
-                "page": page,
-                "id": f"search:{quote(search_term)}",
-                "channelId": 2,
-                "type": "searchword",
-            }
-            response = requests.get("https://udn.com/api/more", params=params)
-            news_pages.append(response.json()["lists"])
-
-        for news_list in news_pages:
-            all_news_data.append(news_list)
+        return udn_crawler.get_headline(search_term, 10)
     else:
-        params = {
-            "page": 1,
-            "id": f"search:{quote(search_term)}",
-            "channelId": 2,
-            "type": "searchword",
-        }
-        response = requests.get("https://udn.com/api/more", params=params)
-
-        all_news_data = response.json()["lists"]
-    return all_news_data
+        return udn_crawler.get_headline(search_term, 1)
 
 def news_exists(news_id, database: Session):
     return database.query(NewsArticle).filter_by(id=news_id).first() is not None

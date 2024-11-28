@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 # Local application imports
 from src.auth.services import authenticate_user_token
 from src.dependencies import session_opener
-from src.feature.news.services import get_new_info
+from src.feature.news.services import get_new_info, udn_crawler
 from src.feature.upvote.services import get_article_upvote_details, toggle_upvote
 from src.models import NewsArticle
 from src.routers.config import INITIAL_ID
