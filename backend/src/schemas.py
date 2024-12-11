@@ -9,3 +9,7 @@ class PromptRequest(BaseModel):
 
 class NewsSumaryRequestSchema(BaseModel): #The class name is incorrect, but it hasn't been changed because it would affect the tests.
     content: str
+
+class NewsSummaryCustomModelRequestSchema(BaseModel):
+    content: str
+    llm_model: str
