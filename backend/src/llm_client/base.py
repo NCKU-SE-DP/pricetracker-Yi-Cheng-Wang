@@ -1,4 +1,5 @@
 import abc
+import aisuite as ai
 
 class MessagePassingInterface:
     """
@@ -17,12 +18,7 @@ class MessagePassingInterface:
         return {"role": self.role, "content": self.content}
 
 class LLMClientBase(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def generate_keywords(self, prompt: str) -> str:
-        """
-        Extract keywords from the given prompt.
-        """
-        return NotImplemented
+    client: ai.Client = ...
 
     @abc.abstractmethod
     def generate_summary(self, prompt: str) -> dict:
