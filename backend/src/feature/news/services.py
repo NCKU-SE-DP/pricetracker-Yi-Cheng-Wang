@@ -9,10 +9,11 @@ from openai import OpenAI
 from sqlalchemy.orm import Session
 
 # Local imports
+from src.config import OPENAI_TOKEN
 from src.models import NewsArticle
 from src.database import DatabaseSession
 from src.crawler.udn_crawler import UDNCrawler
-from src.llm_client.openai_client import LLMClient
+from src.llm_client.openai_client import OpenAIClient
 
 udn_crawler = UDNCrawler()
 
@@ -34,7 +35,7 @@ def fetch_and_process_news(is_initial=False):
     """
     SEARCH_KEYWORD = "價格"
     news_data = get_new_info(SEARCH_KEYWORD, is_initial=is_initial)
-    llm_client = LLMClient(_api_key="xxx")
+    llm_client = OpenAIClient(_api_key=OPENAI_TOKEN, model="openai:gpt-4o-mini")
     for news_item in news_data:
         news_title = news_item["title"]
         relevance_check_response = llm_client.evaluate_relevance(news_title)
