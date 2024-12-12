@@ -17,6 +17,7 @@ from src.feature.upvote.services import get_article_upvote_details, toggle_upvot
 from src.models import NewsArticle
 from src.routers.config import INITIAL_ID
 from src.schemas import NewsSumaryRequestSchema, PromptRequest
+from src.llm_client.openai_client import LLMClient
 
 _id_counter = itertools.count(start=INITIAL_ID)
 
@@ -68,19 +69,10 @@ def read_user_news(
 async def search_news(request: PromptRequest):
     user_prompt = request.prompt
     news_list = []
-    keyword_extraction_messages = [
-        {
-            "role": "system",
-            "content": "你是一個關鍵字提取機器人，用戶將會輸入一段文字，表示其希望看見的新聞內容，請提取出用戶希望看見的關鍵字，請截取最重要的關鍵字即可，避免出現「新聞」、「資訊」等混淆搜尋引擎的字詞。(僅須回答關鍵字，若有多個關鍵字，請以空格分隔)",
-        },
-        {"role": "user", "content": f"{user_prompt}"},
-    ]
+    
+    llm_client = LLMClient(api_key="xxx")
 
-    completion = OpenAI(api_key="xxx").chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=keyword_extraction_messages,
-    )
-    extracted_keywords = completion.choices[0].message.content
+    extracted_keywords = llm_client.extract_search_keywords(user_prompt)
     # Should change into simple factory pattern
     news_items = get_new_info(extracted_keywords, is_initial=False)
     for news_item in news_items:
@@ -116,21 +108,11 @@ async def news_summary(
         payload: NewsSumaryRequestSchema, user=Depends(authenticate_user_token)
 ):
     summary_response = {}
-    summary_generation_messages = [
-        {
-            "role": "system",
-            "content": "你是一個新聞摘要生成機器人，請統整新聞中提及的影響及主要原因 (影響、原因各50個字，請以json格式回答 {'影響': '...', '原因': '...'})",
-        },
-        {"role": "user", "content": f"{payload.content}"},
-    ]
+    
+    llm_client = LLMClient(api_key="xxx")
 
-    completion = OpenAI(api_key="xxx").chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=summary_generation_messages,
-    )
-    summary_result = completion.choices[0].message.content
+    summary_result = llm_client.generate_summary(payload.content)
     if summary_result:
-        summary_result = json.loads(summary_result)
         summary_response["summary"] = summary_result["影響"]
         summary_response["reason"] = summary_result["原因"]
     return summary_response
