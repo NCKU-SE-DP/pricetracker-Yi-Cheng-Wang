@@ -36,6 +36,7 @@ def fetch_and_process_news(is_initial=False):
     SEARCH_KEYWORD = "價格"
     news_data = get_new_info(SEARCH_KEYWORD, is_initial=is_initial)
     llm_client = OpenAIClient(_api_key=OPENAI_TOKEN, model="openai:gpt-4o-mini")
+
     for news_item in news_data:
         news_title = news_item["title"]
         relevance_check_response = llm_client.evaluate_relevance(news_title)
