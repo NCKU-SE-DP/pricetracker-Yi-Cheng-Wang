@@ -4,6 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import sessionmaker
+from sentry_sdk import capture_exception
 
 # Local application imports
 from src.config import (
@@ -15,6 +16,9 @@ from src.database import database_engine
 from src.feature.news.services import fetch_and_process_news
 from src.models import NewsArticle
 from src.routers import news, prices, users
+from src.utils import init_logger_no_rotation
+
+init_logger_no_rotation()
 
 sentry_sdk.init(
     dsn=SENTRY_DSN,
@@ -54,3 +58,10 @@ def start_scheduler():
 @app.on_event("shutdown")
 def shutdown_scheduler():
     background_scheduler.shutdown()
+
+@app.get("/sentry-debug")
+async def trigger_error():
+    try:
+        division_by_zero = 1 / 0
+    except Exception as e:
+        capture_exception(e)
