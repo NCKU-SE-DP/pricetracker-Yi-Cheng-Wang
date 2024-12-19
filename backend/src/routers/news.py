@@ -11,13 +11,15 @@ from sqlalchemy.orm import Session
 
 # Local application imports
 from src.auth.services import authenticate_user_token
+from src.config import OPENAI_TOKEN, ANTHROPIC_TOKEN
 from src.dependencies import session_opener
 from src.feature.news.services import get_new_info, udn_crawler
 from src.feature.upvote.services import get_article_upvote_details, toggle_upvote
 from src.models import NewsArticle
 from src.routers.config import INITIAL_ID
-from src.schemas import NewsSumaryRequestSchema, PromptRequest
-from src.llm_client.openai_client import LLMClient
+from src.schemas import NewsSumaryRequestSchema, PromptRequest, NewsSummaryCustomModelRequestSchema
+from src.llm_client.openai_client import OpenAIClient
+from src.llm_client.anthropic_client import AnthropicClient
 
 _id_counter = itertools.count(start=INITIAL_ID)
 
@@ -69,8 +71,8 @@ def read_user_news(
 async def search_news(request: PromptRequest):
     user_prompt = request.prompt
     news_list = []
-    
-    llm_client = LLMClient(api_key="xxx")
+
+    llm_client = OpenAIClient(api_key=OPENAI_TOKEN, model="openai:gpt-4o-mini")
 
     extracted_keywords = llm_client.extract_search_keywords(user_prompt)
     # Should change into simple factory pattern
@@ -109,7 +111,7 @@ async def news_summary(
 ):
     summary_response = {}
     
-    llm_client = LLMClient(api_key="xxx")
+    llm_client = OpenAIClient(api_key=OPENAI_TOKEN, model="openai:gpt-4o-mini")
 
     summary_result = llm_client.generate_summary(payload.content)
     if summary_result:
@@ -125,3 +127,26 @@ def upvote_article(
 ):
     upvote_message = toggle_upvote(id, user.id, database)
     return {"message": upvote_message}
+
+@router.post("/news_summary_custom_model")
+async def news_summary_with_custom_model(
+        payload: NewsSummaryCustomModelRequestSchema
+):
+    response = {}
+    
+    if not payload.llm_model:
+        llm_client = OpenAIClient(_api_key=OPENAI_TOKEN, model="openai:gpt-4o-mini")
+        result = llm_client.generate_summary(payload.content)
+    elif payload.llm_model.lower().startswith("openai:"):
+        llm_client = OpenAIClient(_api_key=OPENAI_TOKEN, model=payload.llm_model.lower())
+        result = llm_client.generate_summary(payload.content)
+    elif payload.llm_model.lower().startswith("anthropic:"):
+        llm_client = AnthropicClient(_api_key=ANTHROPIC_TOKEN, model=payload.llm_model.lower())
+        result = llm_client.generate_summary(payload.content)
+    else:
+        return {"message": "Invalid model."}
+
+    if result:
+        response["summary"] = result["影響"]
+        response["reason"] = result["原因"]
+    return response
