@@ -45,9 +45,14 @@ class LLMClientTemplate(LLMClientBase, abc.ABC):
             MessagePassingInterface("system", "你是一個新聞摘要生成機器人，請統整新聞中提及的影響及主要原因 (影響、原因各50個字，請以json格式回答 {'影響': '...', '原因': '...'})").to_dict(),
             MessagePassingInterface("user", prompt).to_dict(),
         ]
-        response = self._generate(messages)
-        response = response.replace("'", '"')
-        return json.loads(response)
+        
+        for attempt in range(3): 
+            response = self._generate(messages)
+            response = response.replace("'", '"')
+            try:
+                return json.loads(response)  
+            except json.JSONDecodeError:
+                raise ValueError("[generate_summary] 無法解析為 JSON，請檢查回應格式。")
 
     def evaluate_relevance(self, news_title: str, prompt: str = "民生用品的價格變化") -> str:
         messages = [
