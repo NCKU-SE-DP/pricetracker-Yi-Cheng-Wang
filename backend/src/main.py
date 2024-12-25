@@ -11,6 +11,7 @@ from src.config import (
     SENTRY_DSN,
     SENTRY_PROFILES_SAMPLE_RATE,
     SENTRY_TRACES_SAMPLE_RATE,
+    FETCH_INTERVAL_MINUTES
 )
 from src.database import database_engine
 from src.feature.news.services import fetch_and_process_news
@@ -51,7 +52,6 @@ def start_scheduler():
         # should change into simple factory pattern
         fetch_and_process_news()
     database.close()
-    FETCH_INTERVAL_MINUTES = 100
     background_scheduler.add_job(fetch_and_process_news, "interval", minutes=FETCH_INTERVAL_MINUTES)
     background_scheduler.start()
 
