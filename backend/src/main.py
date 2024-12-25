@@ -11,7 +11,8 @@ from src.config import (
     SENTRY_DSN,
     SENTRY_PROFILES_SAMPLE_RATE,
     SENTRY_TRACES_SAMPLE_RATE,
-    FETCH_INTERVAL_MINUTES
+    FETCH_INTERVAL_MINUTES,
+    ALLOWED_ORIGIN
 )
 from src.database import database_engine
 from src.feature.news.services import fetch_and_process_news
@@ -30,8 +31,6 @@ sentry_sdk.init(
 app = FastAPI()
 background_scheduler = BackgroundScheduler()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=database_engine)
-
-ALLOWED_ORIGIN = "http://localhost:8080"
 
 app.add_middleware(
     CORSMiddleware,  # noqa
