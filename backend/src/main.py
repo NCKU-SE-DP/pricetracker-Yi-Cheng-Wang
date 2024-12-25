@@ -58,10 +58,3 @@ def start_scheduler():
 @app.on_event("shutdown")
 def shutdown_scheduler():
     background_scheduler.shutdown()
-
-@app.get("/sentry-debug")
-async def trigger_error():
-    try:
-        division_by_zero = 1 / 0
-    except Exception as e:
-        capture_exception(e)
