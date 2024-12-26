@@ -20,7 +20,7 @@ def get_necessities_prices(
 ):
     try:
         return requests.get(
-            "locahost",
+            NECESSITIES_PRICE_API_URL,
             params={"CategoryName": category, "Name": commodity},
         ).json()
     except Exception as e:

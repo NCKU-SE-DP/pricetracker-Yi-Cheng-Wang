@@ -11,6 +11,8 @@ from src.config import (
     SENTRY_DSN,
     SENTRY_PROFILES_SAMPLE_RATE,
     SENTRY_TRACES_SAMPLE_RATE,
+    FETCH_INTERVAL_MINUTES,
+    ALLOWED_ORIGIN
 )
 from src.database import database_engine
 from src.feature.news.services import fetch_and_process_news
@@ -29,8 +31,6 @@ sentry_sdk.init(
 app = FastAPI()
 background_scheduler = BackgroundScheduler()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=database_engine)
-
-ALLOWED_ORIGIN = "http://localhost:8080"
 
 app.add_middleware(
     CORSMiddleware,  # noqa
@@ -51,17 +51,9 @@ def start_scheduler():
         # should change into simple factory pattern
         fetch_and_process_news()
     database.close()
-    FETCH_INTERVAL_MINUTES = 100
     background_scheduler.add_job(fetch_and_process_news, "interval", minutes=FETCH_INTERVAL_MINUTES)
     background_scheduler.start()
 
 @app.on_event("shutdown")
 def shutdown_scheduler():
     background_scheduler.shutdown()
-
-@app.get("/sentry-debug")
-async def trigger_error():
-    try:
-        division_by_zero = 1 / 0
-    except Exception as e:
-        capture_exception(e)

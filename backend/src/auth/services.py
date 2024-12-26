@@ -8,7 +8,7 @@ from jose import jwt
 from passlib.context import CryptContext
 
 # Local imports
-from src.auth.config import JWT_SECRET_KEY
+from src.auth.config import JWT_SECRET_KEY, DEFAULT_TOKEN_EXPIRE_MINUTES
 from src.dependencies import session_opener
 from src.models import User
 
@@ -38,7 +38,6 @@ def create_access_token(data, expires_delta=None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        DEFAULT_TOKEN_EXPIRE_MINUTES = 15
         expire = datetime.utcnow() + timedelta(minutes=DEFAULT_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     print(to_encode)
